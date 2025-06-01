@@ -23,6 +23,8 @@ El objetivo principal de este sistema es:
 
 ### 🔌 Diagrama de Conexiones
 
+![Diagrama de conexiones](Diagrama_conexiones.png)
+
 -----
 
 ### 📦 BOM (Bill of Materials)
