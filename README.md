@@ -1,7 +1,7 @@
-🌦️ Sistema de Control y Actuación Climática
+#🌦️ Sistema de Control y Actuación Climática
 Este proyecto implementa una boya climática con Arduino que mide, controla y presenta condiciones meteorológicas clave. También actúa automáticamente sobre dispositivos como calefactor y compuerta de ventilación para mantener las baterías dentro de condiciones seguras.
 
-🧠 Objetivo
+#🧠 Objetivo
 Medir: temperatura, humedad, luz, aire, viento.
 
 Controlar: calefactor (si Tbat < 22 °C) y servomotor (si Tbat > 40 °C).
@@ -10,11 +10,11 @@ Visualizar en LCD los datos ambientales y del sistema.
 
 Simular de forma realista el comportamiento en Wokwi.
 
-🧰 Hardware
-🔌 Diagrama de Conexiones
-🛠️ El diagrama será incluido en la siguiente sección como imagen Fritzing (.png).
+##🧰 Hardware
+##🔌 Diagrama de Conexiones
+![Diagrama de conexiones](Diagrama_conexiones.png)
 
-📦 BOM (Bill of Materials)
+#📦 BOM (Bill of Materials)
 Componente	Cant.	Descripción
 Arduino UNO	1	Microcontrolador principal
 DHT22	2	Sensor Tº y Hº (ambiente y batería)
@@ -26,11 +26,10 @@ Pantalla LCD I2C 16x2	1	Visualización de datos
 Resistencias	Varios	Pull-up / divisores de tensión
 Protoboard + cables	-	Conexionado
 
-💻 Firmware
-🧾 Código Fuente (comentado)
-Consulta Lab_2.ino
+###💻 Firmware
+###🧾 Código Fuente (comentado) Consulta Lab_2.ino
 
-Cambios relevantes:
+##Cambios relevantes:
 🔥 Control de calefactor: ON si Tbat < 22°C, OFF si Tbat > 28°C.
 
 🌬️ Nuevo: Servomotor conectado al pin D9 que abre compuerta si Tbat > 40°C.
