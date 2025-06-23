@@ -1,19 +1,26 @@
-# 🌦️ Sistema de Control y Actuación Climática
+# 🌦️ Sistema de Control y Actuación Climática con Supervisión Inteligente y Control Remoto IR
 
-Este proyecto implementa una **boya climática con Arduino** diseñada para **medir, controlar y presentar condiciones meteorológicas clave**. Además, actúa automáticamente sobre dispositivos como un calefactor y una compuerta de ventilación para **mantener las baterías dentro de rangos de temperatura seguros**.
+Este proyecto implementa una **boya climática automatizada con Arduino**, diseñada para **medir, controlar y presentar condiciones meteorológicas clave**, con capacidades **remotas, inteligentes y de autodiagnóstico**.
 
 -----
 
-## 🧠 Objetivo
+## 🧠 Objetivos del sistema
 
-El objetivo principal de este sistema es:
+El sistema está orientado a:
 
-  * **Medir**: Temperatura, humedad, luz ambiental y de viento.
-  * **Controlar**:
-      * **Calefactor**: Se activa si la temperatura de la batería ($T\_{bat}$) es inferior a $22^\\circ C$.
-      * **Servomotor**: Abre la compuerta de ventilación si la temperatura de la batería ($T\_{bat}$) supera los $40^\\circ C$.
-  * **Visualizar**: Mostrar los datos ambientales y del sistema en una pantalla LCD.
-  * **Simular**: Recrear de forma realista el comportamiento del sistema en Wokwi.
+- **Medir** condiciones ambientales clave:
+  - Temperatura y humedad ambiental
+  - Temperatura de batería
+  - Iluminación ambiente
+  - Calidad del aire
+  - Velocidad y dirección del viento
+- **Controlar automáticamente**:
+  - **Calefactor** para proteger la batería contra temperaturas bajas
+  - **Servomotor** para abrir compuerta si la batería se sobrecalienta
+- **Presentar información** en una pantalla LCD de forma cíclica
+- **Supervisar** el estado térmico con lógica difusa (fuzzy logic)
+- **Permitir control remoto** mediante un **mando infrarrojo IR**
+- **Detectar errores del sistema** a través de funciones básicas de **autodiagnóstico**
 
 -----
 
@@ -27,19 +34,22 @@ El objetivo principal de este sistema es:
 
 -----
 
-### 📦 BOM (Bill of Materials)
+### 📦 Lista de materiales (BOM)
 
-| Componente            | Cant. | Descripción                               |
-| :-------------------- | :---- | :---------------------------------------- |
-| Arduino UNO           | 1     | Microcontrolador principal                |
-| DHT22                 | 2     | Sensor Tº y Hº (ambiente y batería)       |
-| LDR                   | 1     | Sensor de luz                             |
-| Servo motor SG90      | 1     | Control de compuerta de ventilación       |
-| Buzzer                | 1     | Señal sonora nocturna                     |
-| LED                   | 1     | Luz de señalización nocturna              |
-| Pantalla LCD I2C 16x2 | 1     | Visualización de datos                    |
-| Resistencias          | Varios | Pull-up / divisores de tensión            |
-| Protoboard + cables   | -     | Conexionado                               |
+| Componente            | Cant. | Descripción                                         |
+|----------------------|-------|-----------------------------------------------------|
+| Arduino UNO           | 1     | Microcontrolador principal                          |
+| DHT22                 | 2     | Sensor de temperatura y humedad (ambiente y batería)|
+| LDR                   | 1     | Sensor de luz                                       |
+| Sensor analógico      | 2     | Simulación de calidad de aire y viento              |
+| Servo motor SG90      | 1     | Compuerta de ventilación                            |
+| Buzzer                | 1     | Señal sonora nocturna                               |
+| LED                   | 1     | Luz de señalización nocturna                        |
+| Pantalla LCD I2C 16x2 | 1     | Visualización de datos                              |
+| Receptor IR (KY-022)  | 1     | Comunicación infrarroja                             |
+| Mando a distancia IR  | 1     | Control remoto (tipo Elegoo o similar)              |
+| Resistencias          | Varios| Pull-up / divisores de tensión                      |
+| Protoboard + cables   | -     | Conexionado general                                 |
 
 -----
 
@@ -47,38 +57,66 @@ El objetivo principal de este sistema es:
 
 -----
 
-### 🧾 Código Fuente (comentado)
+### 🔧 Funcionalidades destacadas
 
-Consulta el archivo [`Lab_2.ino`](https://www.google.com/search?q=./Lab_2.ino) para revisar el código fuente completo y comentado.
+- **🔥 Control de calefactor (zona muerta):**
+  - Se activa cuando `T_bat < setpoint - zona_muerta`
+  - Se desactiva cuando `T_bat > setpoint + zona_muerta`
+
+- **🌬️ Compuerta de aire (servo):**
+  - Se abre automáticamente si la batería supera los `40°C`
+
+- **🌃 Modo nocturno inteligente:**
+  - Se activa LED y buzzer si el nivel de luz cae por debajo del 70%
+
+- **📺 Interfaz HMI local (LCD):**
+  - Muestra cíclicamente todas las variables medidas y estado del sistema
+
+- **🧪 Debug serie:**
+  - Monitorización en tiempo real vía USB de todos los valores del sistema
+
+- **📡 Control remoto IR:**
+  - Mando a distancia permite modificar el `TEMP_SETPOINT` con botones `+` y `−`
+
+- **🛠️ Autodiagnóstico:**
+  - Verificación de rangos válidos de sensores
+  - Comparación entre sensores para detectar diferencias anómalas
+
+- **🤖 Supervisión inteligente:**
+  - El sistema reajusta automáticamente el `setpoint` si detecta un gradiente excesivo entre temperatura ambiente y batería
+
+- **🌀 Control Fuzzy (base demostrativa):**
+  - Se calcula una señal de control difusa (no vinculante) como demostración de técnicas avanzadas de instrumentación
 
 -----
 
-### Cambios Relevantes en el Firmware:
+### 📂 Código fuente
 
-  * **🔥 Control de Calefactor**: Se activa si la temperatura de la batería ($T\_{bat}$) es menor de $22^\\circ C$ y se desactiva si supera los $28^\\circ C$ (zona muerta para evitar oscilaciones).
-  * **🌬️ Servomotor**: **Nuevo** control de servomotor (conectado al pin D9) que abre la compuerta de ventilación si la temperatura de la batería ($T\_{bat}$) es mayor de $40^\\circ C$.
-  * **🌃 Control Nocturno**: Activación automática del buzzer y LED cuando el nivel de luz es inferior al $80%$.
-  * **📺 Presentación LCD**: Visualización cíclica y organizada de todos los datos en la pantalla LCD.
-  * **🧪 Debug Serie**: Implementación de un sistema de depuración completo y detallado a través del puerto serie.
+Consulta el archivo [`LAB_2.ino`](./LAB_2.ino) para acceder al código completo, organizado y comentado.
 
 -----
 
-## 🧪 Pruebas de Validación
+## ✅ Pruebas de Validación
 
-| Requisito                                  | Estado |
-| :----------------------------------------- | :----- |
-| Medición de variables ambientales          | ✅     |
-| Control calefactor con zona muerta         | ✅     |
-| Control servo compuerta cuando $T\_{bat} \> 40^\\circ C$ | ✅     |
-| Visualización LCD y depuración serie       | ✅     |
-| Simulación funcional en Wokwi              | ✅     |
+| Requisito                                                            | Estado |
+|----------------------------------------------------------------------|--------|
+| Medición ambiental completa                                          | ✅     |
+| Control calefactor con zona muerta                                   | ✅     |
+| Control servo si `T_bat > 40°C`                                      | ✅     |
+| Control nocturno con buzzer y LED                                    | ✅     |
+| Visualización en LCD                                                 | ✅     |
+| Control remoto IR funcional                                          | ✅     |
+| Supervisión inteligente (ajuste automático del setpoint)             | ✅     |
+| Autodiagnóstico básico (rangos, diferencias)                         | ✅     |
+| Base de control fuzzy para documentación e informe                   | ✅     |
+| Simulación completa en Wokwi                                         | ✅     |
 
 -----
 
 ## 🔗 Simulación en Wokwi
 
-Puedes ver y probar la simulación del proyecto directamente en Wokwi:
+Accede directamente a la simulación funcional en Wokwi para probar todo el sistema:
 
-[**Acceder a la Simulación en Wokwi**](https://wokwi.com/projects/430770980504890369)
+👉 [**Simulación en Wokwi**](https://wokwi.com/projects/430770980504890369)
 
 -----
